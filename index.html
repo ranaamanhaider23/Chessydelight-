@@ -1,1 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheesy Delights - Complete Menu & Cart</title>
+    
+    <!-- Mobile Full Screen App Settings -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a1a">
+    <link rel="manifest" href="manifest.json">
 
+    <style>
+        :root {
+            --primary-color: #ffc107;
+            --secondary-color: #dc3545;
+            --dark-color: #1a1a1a;
+            --light-bg: linear-gradient(135deg, #fdfbf7 0%, #f5eedc 100%);
+            --whatsapp-color: #25d366;
+            --call-color: #007bff;
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: var(--light-bg); 
+            margin: 0; 
+            padding: 0; 
+            color: #333; 
+            padding-bottom: 40px;
+            min-height: 100vh;
+        }
+        
+        header { background-color: var(--dark-color); color: white; padding: 30px 20px; text-align: center; border-bottom: 8px solid var(--primary-color); }
+        header h1 { margin: 0; color: var(--primary-color); font-size: 2.8rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        header p { margin: 5px 0 10px 0; color: #ccc; font-size: 1.1rem; }
+        .header-address { font-size: 0.95rem; color: #ffc107; font-weight: 500; background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 20px; display: inline-block; }
+        
+        .info-bar { background-color: var(--primary-color); padding: 10px; text-align: center; font-weight: bold; font-size: 1rem; color: #222; }
+        
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        
+        /* ADJUSTED TOP ORDER BOX */
+        .top-cart-layout {
+            max-width: 800px;
+            margin: 20px auto 10px auto;
+            padding: 0 15px;
+            box-sizing: border-box;
+        }
+        .cart-panel { 
+            background: #ffffff; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12); 
+            padding: 15px; 
+            border-radius: 12px;
+            border: 2px solid var(--primary-color);
+        }
+        .cart-header { display: flex; justify-content: space-between; font-weight: bold; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 8px; font-size: 1.1rem; color: #1a1a1a; }
+        .cart-items-list { max-height: 150px; overflow-y: auto; margin-bottom: 10px; padding: 0; list-style: none; }
+        .cart-item-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.95rem; border-bottom: 1px dashed #eee; align-items: center; }
+        .remove-btn { color: #dc3545; cursor: pointer; font-weight: bold; margin-left: 10px; border: none; background: none; font-size: 1rem; }
+        
+        .last-buttons { display: flex; gap: 12px; margin-top: 5px; }
+        .last-btn { flex: 1; border: none; padding: 12px; cursor: pointer; border-radius: 8px; font-size: 1.05rem; font-weight: bold; text-align: center; color: white; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .last-whatsapp { background-color: var(--whatsapp-color); }
+        .last-whatsapp:hover { background-color: #20ba5a; }
+        .last-call { background-color: var(--call-color); }
+        .last-call:hover { background-color: #0069d9; }
+
+        /* Menu Grid Settings */
+        .category-title { background: var(--secondary-color); color: white; padding: 10px 20px; margin-top: 45px; border-radius: 5px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; font-size: 1.4rem; box-shadow: 0 4px 10px rgba(220, 53, 69, 0.2); }
+        .pizza-special-title { background: #28a745; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.2); }
+        
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-top: 20px; }
+        .menu-item { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border-left: 5px solid var(--primary-color); display: flex; flex-direction: column; justify-content: space-between; transition: 0.3s; }
+        .menu-item:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+        .menu-item h3 { margin: 0 0 8px 0; color: var(--dark-color); font-size: 1.3rem; }
+        .menu-item p { margin: 0 0 15px 0; color: #666; font-size: 0.9rem; line-height: 1.4; }
+        
+        .price-tag { font-weight: bold; color: var(--secondary-color); font-size: 1.1rem; background: #fff5f5; padding: 6px 12px; border-radius: 6px; display: inline-block; margin-bottom: 12px; align-self: flex-start; border: 1px solid #ffe3e3; }
+        
+        .pizza-prices { background: #f8f9fa; padding: 8px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; display: flex; justify-content: space-between; border: 1px solid #eee; }
+        .pizza-prices span { color: var(--secondary-color); }
+
+        .size-select { padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-weight: bold; width: 100%; margin-bottom: 12px; background-color: #fff; cursor: pointer; font-size: 0.95rem; }
+        .add-btn { background-color: var(--dark-color); color: white; border: none; padding: 11px; cursor: pointer; border-radius: 6px; font-weight: bold; width: 100%; transition: 0.2s; font-size: 1rem; }
+        .add-btn:hover { background-color: var(--secondary-color); }
+
+        footer { background: var(--dark-color); color: white; text-align: center; padding: 30px 20px; margin-top: 80px; border-top: 5px solid var(--primary-color); }
+        .footer-contact { font-size: 1.2rem; color: var(--primary-color); font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🍕 CHEESY DELIGHTS 🍕</h1>
+        <p>Deliciously Cheesy, Right to Your Doorstep!</p>
+        <div class="header-address">📍 Staina Road Saleemi Chowk, Near Batala Colony, Faisalabad.</div>
+    </header>
+
+    <div class="info-bar">
+        🕒 Timing: 11:00 AM to 02:00 AM | 🛵 FREE HOME DELIVERY & TAKEAWAY
+    </div>
+
+    <!-- TOP ORDER PANEL -->
+    <div class="top-cart-layout">
+        <div class="cart-panel">
+            <div class="cart-header">
+                <span>🛒 Your Selected Items</span>
+                <span>Total Bill: Rs. <span id="total-bill">0</span></span>
+            </div>
+            
+            <ul class="cart-items-list" id="cart-items">
+                <li style="color:#aaa; text-align:center; padding:10px; font-size:0.9rem;">Menu se items select karein...</li>
+            </ul>
+
+            <div class="last-buttons">
+                <button class="last-btn last-whatsapp" onclick="sendFullOrderWhatsApp()">💬 WhatsApp Order</button>
+                <button class="last-btn last-call" onclick="makeCall()">📞 Call Now</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- ================= REGULAR SPECIAL PIZZA ================= -->
+        <h2 class="category-title">Regular Special Pizza</h2>
+        <div class="menu-grid">
+            <div class="menu-item" data-name="Chicken Fajita Pizza">
+                <h3>Chicken Fajita</h3>
+                <p>Base of Pizza Sauce, Special Fajita Chicken, Onion, Green Pepper, Jalapeno, Lot of Cheese.</p>
+                <div class="pizza-prices"><span>S: 430</span> <span>M: 700</span> <span>L: 1200</span></div>
+                <select class="size-select">
+                    <option value="Small" data-price="430">Small - Rs. 430</option>
+                    <option value="Medium" data-price="700">Medium - Rs. 700</option>
+                    <option value="Large" data-price="1200">Large - Rs. 1200</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Tikka Chicken Pizza">
+                <h3>Tikka Chicken</h3>
+                <p>Base of Pizza Sauce, Chicken, Onion, Cheese.</p>
+                <div class="pizza-prices"><span>S: 430</span> <span>M: 700</span> <span>L: 1200</span></div>
+                <select class="size-select">
+                    <option value="Small" data-price="430">Small - Rs. 430</option>
+                    <option value="Medium" data-price="700">Medium - Rs. 700</option>
+                    <option value="Large" data-price="1200">Large - Rs. 1200</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Chicken Supreme Pizza">
+                <h3>Chicken Supreme</h3>
+                <p>Base of Pizza Sauce, Chicken, Cheese, Mushroom, Olives.</p>
+                <div class="pizza-prices"><span>S: 430</span> <span>M: 700</span> <span>L: 1200</span></div>
+                <select class="size-select">
+                    <option value="Small" data-price="430">Small - Rs. 430</option>
+                    <option value="Medium" data-price="700">Medium - Rs. 700</option>
+                    <option value="Large" data-price="1200">Large - Rs. 1200</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Cheesy Lover Pizza">
+                <h3>Cheesy Lover</h3>
+                <p>Base of Pizza Sauce, Extra Cheese.</p>
+                <div class="pizza-prices"><span>S: 430</span> <span>M: 700</span> <span>L: 1200</span></div>
+                <select class="size-select">
+                    <option value="Small" data-price="430">Small - Rs. 430</option>
+                    <option value="Medium" data-price="700">Medium - Rs. 700</option>
+                    <option value="Large" data-price="1200">Large - Rs. 1200</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Veggie Lovers Pizza">
+                <h3>Veggie Lovers</h3>
+                <p>Base of Pizza Sauce, Green Pepper, Onion, Mushroom, Black Olives, Tomato, Cheese.</p>
+                <div class="pizza-prices"><span>S: 430</span> <span>M: 700</span> <span>L: 1200</span></div>
+                <select class="size-select">
+                    <option value="Small" data-price="430">Small - Rs. 430</option>
+                    <option value="Medium" data-price="700">Medium - Rs. 700</option>
+                    <option value="Large" data-price="1200">Large - Rs. 1200</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Peprone Pizza">
+                <h3>Peprone Pizza</h3>
+                <p>Base of Pizza Sauce, Peprone, Onion, Chicken, Lot of Cheese.</p>
+                <div class="pizza-prices"><span>S: 430</span> <span>M: 700</span> <span>L: 1200</span></div>
+                <select class="size-select">
+                    <option value="Small" data-price="430">Small - Rs. 430</option>
+                    <option value="Medium" data-price="700">Medium - Rs. 700</option>
+                    <option value="Large" data-price="1200">Large - Rs. 1200</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+        </div>
+
+        <!-- ================= SPECIAL PIZZA ================= -->
+        <h2 class="category-title pizza-special-title">Special Pizza</h2>
+        <div class="menu-grid">
+            <div class="menu-item" data-name="Farm House Pizza">
+                <h3>Farm House Pizza</h3>
+                <p>Farm House Sauce, Onion, Chicken, Jalapeno, Ring Kabab, Relish.</p>
+                <div class="pizza-prices"><span>S: 450</span> <span>M: 800</span> <span>L: 1300</span></div>
+                <select class="size-select">
+                    <option value="Small" data-price="450">Small - Rs. 450</option>
+                    <option value="Medium" data-price="800">Medium - Rs. 800</option>
+                    <option value="Large" data-price="1300">Large - Rs. 1300</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Peri Peri Pizza">
+                <h3>Peri Peri Pizza</h3>
+                <p>Onion, Chicken, Jalapeno, Pikal.</p>
+                <div class="pizza-prices"><span>S: 450</span> <span>M: 800</span> <span>L: 1300</span></div>
+                <select class="size-select">
+                    <option value="Small" data-price="450">Small - Rs. 450</option>
+                    <option value="Medium" data-price="800">Medium - Rs. 800</option>
+                    <option value="Large" data-price="1300">Large - Rs. 1300</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Cheesy Delight Special Pizza">
+                <h3>Cheesy Delight Special</h3>
+                <p>Base of Pizza Sauce, Green Pepper, Onion, Mushroom, Black Olives, Tomato, Cheese.</p>
+                <div class="pizza-prices"><span>S: 450</span> <span>M: 800</span> <span>L: 1300</span></div>
+                <select class="size-select">
+                    <option value="Small" data-price="450">Small - Rs. 450</option>
+                    <option value="Medium" data-price="800">Medium - Rs. 800</option>
+                    <option value="Large" data-price="1300">Large - Rs. 1300</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Shahi Mughlai Pizza">
+                <h3>Shahi Mughlai Pizza</h3>
+                <p>Fayeri Sauce, Onion, Chicken, Black Pepper Chicken, Jalapeno, Lot of Cheese, Ring Cutting.</p>
+                <div class="pizza-prices"><span>S: 450</span> <span>M: 800</span> <span>L: 1300</span></div>
+                <select class="size-select">
+                    <option value="Small" data-price="450">Small - Rs. 450</option>
+                    <option value="Medium" data-price="800">Medium - Rs. 800</option>
+                    <option value="Large" data-price="1300">Large - Rs. 1300</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Bonefire Pizza">
+                <h3>Bonefire Pizza</h3>
+                <p>Dip Sauce, Onion, Chicken, Cheese, Green Pepper, Olive, Jalapeno.</p>
+                <div class="pizza-prices"><span>S: 450</span> <span>M: 800</span> <span>L: 1300</span></div>
+                <select class="size-select">
+                    <option value="Small" data-price="450">Small - Rs. 450</option>
+                    <option value="Medium" data-price="800">Medium - Rs. 800</option>
+                    <option value="Large" data-price="1300">Large - Rs. 1300</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Royal Behari Kabab Pizza">
+                <h3>Royal Behari Kabab</h3>
+                <p>Pizza Sauce, Onion, Chicken, Cheese, Top of Kabab.</p>
+                <div class="pizza-prices"><span>S: 450</span> <span>M: 800</span> <span>L: 1300</span></div>
+                <select class="size-select">
+                    <option value="Small" data-price="450">Small - Rs. 450</option>
+                    <option value="Medium" data-price="800">Medium - Rs. 800</option>
+                    <option value="Large" data-price="1300">Large - Rs. 1300</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+        </div>
+
+        <!-- ================= PIZZA STUFFING (EXTRA OPTION) ================= -->
+        <h2 class="category-title">Pizza Stuffing Options</h2>
+        <div class="menu-grid">
+            <div class="menu-item" data-name="Cheese Stuffing">
+                <h3>Cheese Stuffing</h3>
+                <p>Add extra cheese core stuffing to your pizza crust.</p>
+                <select class="size-select">
+                    <option value="Medium" data-price="250">Medium - Rs. 250</option>
+                    <option value="Large" data-price="300">Large - Rs. 300</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Cheese Chicken Stuffing">
+                <h3>Cheese Chicken Stuffing</h3>
+                <p>Add rich chicken & cheese blend stuffing to your pizza crust.</p>
+                <select class="size-select">
+                    <option value="Medium" data-price="250">Medium - Rs. 250</option>
+                    <option value="Large" data-price="300">Large - Rs. 300</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Kabab Stuffing">
+                <h3>Kabab Stuffing</h3>
+                <p>Add tasty kabab lining stuffing inside your pizza crust.</p>
+                <select class="size-select">
+                    <option value="Medium" data-price="250">Medium - Rs. 250</option>
+                    <option value="Large" data-price="300">Large - Rs. 300</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+        </div>
+
+        <!-- ================= BURGERS ================= -->
+        <h2 class="category-title">Burgers</h2>
+        <div class="menu-grid">
+            <div class="menu-item" data-name="Patty Burger" data-price="350"><h3>Patty Burger</h3><span class="price-tag">Rs. 350</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Zinger Burger" data-price="400"><h3>Zinger Burger</h3><span class="price-tag">Rs. 400</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Classic Burger" data-price="350"><h3>Classic Burger</h3><span class="price-tag">Rs. 350</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Dyamight Burger" data-price="350"><h3>Dyamight Burger</h3><span class="price-tag">Rs. 350</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Special Burger" data-price="400"><h3>Special Burger</h3><span class="price-tag">Rs. 400</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+        </div>
+
+        <!-- ================= SANDWICHES ================= -->
+        <h2 class="category-title">Sandwiches</h2>
+        <div class="menu-grid">
+            <div class="menu-item" data-name="Classic Sandwich" data-price="600"><h3>Classic Sandwich</h3><span class="price-tag">Rs. 600</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Arabic Sandwich" data-price="600"><h3>Arabic Sandwich</h3><span class="price-tag">Rs. 600</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Shahi Mughlai Sandwich" data-price="600"><h3>Shahi Mughlai Sandwich</h3><span class="price-tag">Rs. 600</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Jalapeno Sandwich" data-price="600"><h3>Jalapeno Sandwich</h3><span class="price-tag">Rs. 600</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Special Sandwich" data-price="650"><h3>Special Sandwich</h3><span class="price-tag">Rs. 650</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Zinger Chicken Sandwich" data-price="750"><h3>Zinger Chicken Sandwich</h3><span class="price-tag">Rs. 750</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Double Decker Sandwich" data-price="1050"><h3>Double Decker Sandwich</h3><span class="price-tag">Rs. 1050</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+        </div>
+
+        <!-- ================= PARATHA ROLL ================= -->
+        <h2 class="category-title">Paratha Roll</h2>
+        <div class="menu-grid">
+            <div class="menu-item" data-name="Zinger Paratha Roll" data-price="450"><h3>Zinger Paratha Roll</h3><span class="price-tag">Rs. 450</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Chicken Kabab Paratha Roll" data-price="350"><h3>Chicken Kabab Paratha Roll</h3><span class="price-tag">Rs. 350</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Chicken Paratha Roll" data-price="300"><h3>Chicken Paratha Roll</h3><span class="price-tag">Rs. 300</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+        </div>
+
+        <!-- ================= ROLLS & PLATTERS ================= -->
+        <h2 class="category-title">Rolls & Platters</h2>
+        <div class="menu-grid">
+            <div class="menu-item" data-name="Stuff Chicken Roll" data-price="400"><h3>Stuff Chicken Roll</h3><span class="price-tag">Rs. 400</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Creamy Mughlai Roll" data-price="430"><h3>Creamy Mughlai Roll</h3><span class="price-tag">Rs. 430</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Chicken Kabab Roll" data-price="500"><h3>Chicken Kabab Roll</h3><span class="price-tag">Rs. 500</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Zinger Chicken Roll" data-price="550"><h3>Zinger Chicken Roll</h3><span class="price-tag">Rs. 550</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Cheesy Delight Platter" data-price="750"><h3>Cheesy Delight Platter</h3><span class="price-tag">Rs. 750</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Special Mughlai Platter" data-price="750"><h3>Special Mughlai Platter</h3><span class="price-tag">Rs. 750</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Zinger Platter" data-price="850"><h3>Zinger Platter</h3><span class="price-tag">Rs. 850</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+        </div>
+
+        <!-- ================= SHAWARMA ================= -->
+        <h2 class="category-title">Shawarma</h2>
+        <div class="menu-grid">
+            <div class="menu-item" data-name="Cheesy Delight Shawarma" data-price="210"><h3>Cheesy Delight Shawarma</h3><span class="price-tag">Rs. 210</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Zinger Shawarma" data-price="250"><h3>Zinger Shawarma</h3><span class="price-tag">Rs. 250</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Chicken Kabab Shawarma" data-price="280"><h3>Chicken Kabab Shawarma</h3><span class="price-tag">Rs. 280</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+        </div>
+
+        <!-- ================= APPETIZERS (FRIES & NUGGETS) ================= -->
+        <h2 class="category-title">Appetizers</h2>
+        <div class="menu-grid">
+            <div class="menu-item" data-name="Plain Mayo Fries"><h3>Plain Mayo Fries</h3><p>French Fries (Plain/Spicy) with Salt</p><span class="price-tag">Rs. 270</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Nuggets and Fries">
+                <h3>Nuggets and Fries</h3>
+                <select class="size-select">
+                    <option value="6 Pcs" data-price="320">6 Pcs - Rs. 320</option>
+                    <option value="12 Pcs" data-price="600">12 Pcs - Rs. 600</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Special Saucy Fries" data-price="350"><h3>Special Saucy Fries</h3><span class="price-tag">Rs. 350</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Nacho Fries" data-price="450"><h3>Nacho Fries</h3><span class="price-tag">Rs. 450</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+            <div class="menu-item" data-name="Loader Pizza Fries" data-price="450"><h3>Loader Pizza Fries</h3><span class="price-tag">Rs. 450</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+        </div>
+
+        <!-- ================= PASTAS ================= -->
+        <h2 class="category-title">Pastas</h2>
+        <div class="menu-grid">
+            <div class="menu-item" data-name="Special Pasta">
+                <h3>Special Pasta</h3>
+                <select class="size-select">
+                    <option value="F1" data-price="350">F1 - Rs. 350</option>
+                    <option value="F2" data-price="600">F2 - Rs. 600</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Hot & Spicy Pasta">
+                <h3>Hot & Spicy Pasta</h3>
+                <select class="size-select">
+                    <option value="F1" data-price="350">F1 - Rs. 350</option>
+                    <option value="F2" data-price="600">F2 - Rs. 600</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Crunchy Pasta" data-price="700"><h3>Crunchy Pasta</h3><span class="price-tag">Rs. 700</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+        </div>
+
+        <!-- ================= WINGS ================= -->
+        <h2 class="category-title">Wings</h2>
+        <div class="menu-grid">
+            <div class="menu-item" data-name="Oven Baked Wings">
+                <h3>Oven Baked Wings</h3>
+                <select class="size-select">
+                    <option value="6 Pieces" data-price="350">6 Pieces - Rs. 350</option>
+                    <option value="12 Pieces" data-price="600">12 Pieces - Rs. 600</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Breading Wings">
+                <h3>Breading Wings</h3>
+                <select class="size-select">
+                    <option value="6 Pieces" data-price="350">6 Pieces - Rs. 350</option>
+                    <option value="12 Pieces" data-price="600">12 Pieces - Rs. 600</option>
+                </select>
+                <button class="add-btn" onclick="addToCartMulti(this)">➕ Add To Order</button>
+            </div>
+            <div class="menu-item" data-name="Loader Wings" data-price="700"><h3>Loader Wings</h3><p>12 Pieces Pack</p><span class="price-tag">Rs. 700</span><button class="add-btn" onclick="addToCartDirect(this)">➕ Add To Order</button></div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>📍 Staina Road Saleemi Chowk, Near Batala Colony, Faisalabad.</p>
+        <div class="footer-contact">📞 0319-4249341 | 03297226020</div>
+    </footer>
+
+    <script>
+        var cart = [];
+
+        function updateCartUI() {
+            var cartList = document.getElementById('cart-items');
+            var totalBillSpan = document.getElementById('total-bill');
+            cartList.innerHTML = "";
+            var total = 0;
+
+            if(cart.length === 0){
+                cartList.innerHTML = '<li style="color:#aaa; text-align:center; padding:10px; font-size:0.9rem;">Menu se items select karein...</li>';
+                totalBillSpan.innerText = 0;
+                return;
+            }
+
+            cart.forEach(function(item, index) {
+                total += item.price;
+                var row = document.createElement('li');
+                row.className = 'cart-item-row';
+                row.innerHTML = '<span><b>' + item.name + '</b> ' + (item.variation ? '['+item.variation+']' : '') + '</span>' +
+                                '<span>Rs. ' + item.price + ' <button class="remove-btn" onclick="removeItem('+index+')">❌</button></span>';
+                cartList.appendChild(row);
+            });
+
+            totalBillSpan.innerText = total;
+        }
+
+        function addToCartMulti(button) {
+            var itemCard = button.closest('.menu-item');
+            var itemName = itemCard.getAttribute('data-name');
+            var select = itemCard.querySelector('.size-select');
+            var selectedVariation = select.value;
+            var price = parseInt(select.options[select.selectedIndex].getAttribute('data-price'));
+
+            cart.push({ name: itemName, variation: selectedVariation, price: price });
+            updateCartUI();
+            
+            window.scrollTo({top: 150, behavior: 'smooth'});
+        }
+
+        function addToCartDirect(button) {
+            var itemCard = button.closest('.menu-item');
+            var itemName = itemCard.getAttribute('data-name');
+            var price = parseInt(itemCard.getAttribute('data-price'));
+
+            cart.push({ name: itemName, variation: '', price: price });
+            updateCartUI();
+            
+            window.scrollTo({top: 150, behavior: 'smooth'});
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function sendFullOrderWhatsApp() {
+            if(cart.length === 0) {
+                alert("Pehle menu se kuch items select kar lein!");
+                return;
+            }
+
+            var phoneNumber = "923194249341";
+            var message = "*📋 ORDER LIST:*%0A";
+            
+            cart.forEach(function(item, i) {
+                message += (i+1) + ". " + item.name + " " + (item.variation ? "["+item.variation+"]" : "") + " - Rs. " + item.price + "%0A";
+            });
+
+            message += "%0A💰 *Total Bill:* Rs. " + document.getElementById('total-bill').innerText;
+            message += "%0A📍 *Customer Address:* [Type Address Here]";
+            
+            var whatsappUrl = "https://wa.me/" + phoneNumber + "?text=" + message;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function makeCall() {
+            window.open("tel:03194249341", "_self");
+        }
+    </script>
+
+</body>
+</html>
